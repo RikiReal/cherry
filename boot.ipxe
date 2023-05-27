@@ -1,0 +1,17 @@
+#!ipxe
+
+# Set address of control plane
+# The server ip has to be dynamic when used inside of containers
+set SERVER http://192.168.1.107
+echo server is ${SERVER}
+
+set STREAM stable
+set VERSION 38.20230430.3.1
+set ARCH aarch64
+set CONFIGURL ${SERVER}/config.ign
+set BASEURL ${SERVER}/boot
+
+kernel ${BASEURL}/fedora-coreos-${VERSION}-live-kernel-${ARCH} initrd=main coreos.live.rootfs_url=${BASEURL}/fedora-coreos-${VERSION}-live-rootfs.${ARCH}.img ignition.firstboot ignition.platform.id=metal ignition.config.url=${CONFIGURL}
+initrd --name main ${BASEURL}/fedora-coreos-${VERSION}-live-initramfs.${ARCH}.img
+
+boot
