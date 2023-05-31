@@ -1,8 +1,9 @@
 #!ipxe
+echo Configuring dhcp...
+dhcp
 
 # Set address of control plane
-# The server ip has to be dynamic when used inside of containers
-set SERVER http://192.168.1.107
+set SERVER http://${next-server}
 echo server is ${SERVER}
 
 set STREAM stable
