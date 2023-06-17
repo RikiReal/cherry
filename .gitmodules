@@ -1,3 +1,0 @@
-[submodule "firmware/ipxe"]
-	path = firmware/ipxe
-	url = git@github.com:ipxe/ipxe.git
