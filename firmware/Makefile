@@ -1,5 +1,4 @@
 ARCH := $(shell uname -m)
-# In need the IP of the dhcp server, not the IP of the host
 IP := $(shell ip -f inet -o a | grep "2:" | sed -E -e "s/(\s+)/ /g" | cut -d " " -f 4 | cut -d "/" -f 1)
 
 # Build the IPXE bootloader with embeded script for arm64 efi and x86_64 efi
