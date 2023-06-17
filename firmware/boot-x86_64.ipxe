@@ -1,0 +1,18 @@
+#!ipxe
+echo Configuring dhcp...
+dhcp
+
+# Set address of control plane
+set SERVER http://${next-server}
+echo server is ${SERVER}
+
+set STREAM stable
+set VERSION 38.20230430.3.1
+set ARCH x86_64
+set CONFIGURL ${SERVER}/config.ign
+set BASEURL ${SERVER}/boot
+
+kernel ${BASEURL}/fedora-coreos-${VERSION}-live-kernel-${ARCH} initrd=main coreos.live.rootfs_url=${BASEURL}/fedora-coreos-${VERSION}-live-rootfs.${ARCH}.img ignition.firstboot ignition.platform.id=metal ignition.config.url=${CONFIGURL}
+initrd --name main ${BASEURL}/fedora-coreos-${VERSION}-live-initramfs.${ARCH}.img
+
+boot
