@@ -27,3 +27,4 @@ jobs:
           context: ./firmware
           platforms: linux/amd64,linux/arm64
           push: true
+          tag: ${{ secrets.DOCKERHUB_USERNAME }}/cherry-firmware:latest
