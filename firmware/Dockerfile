@@ -1,12 +1,11 @@
 FROM ubuntu:jammy as build-ipxe
 ARG TARGETARCH
-ARG CC=gcc-aarch64-linux-gnu
+WORKDIR /src
 RUN case $TARGETARCH in \
         "amd64") CC=gcc-aarch64-linux-gnu ;; \
         "arm64") CC=gcc-x86-64-linux-gnu ;; \
-    esac 
-WORKDIR /src
-RUN apt-get update && apt-get install -y \
+    esac \
+    && apt-get update && apt-get install -y \
     build-essential \
     curl \
     $CC \
