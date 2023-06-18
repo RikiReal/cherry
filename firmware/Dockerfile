@@ -1,9 +1,15 @@
 FROM ubuntu:jammy as build-ipxe
+ARG TARGETARCH
+ARG CC=gcc-aarch64-linux-gnu
+RUN case $TARGETARCH in \
+        "amd64") CC=gcc-aarch64-linux-gnu ;; \
+        "arm64") CC=gcc-x86-64-linux-gnu ;; \
+    esac 
 WORKDIR /src
 RUN apt-get update && apt-get install -y \
     build-essential \
-    gcc-aarch64-linux-gnu \
     curl \
+    $CC \
     && rm -rf /var/lib/apt/lists/*
 ENV IPXE_VERSION=1.21.1
 RUN curl -sSL -o ipxe.tar.gz https://github.com/ipxe/ipxe/archive/refs/tags/v$IPXE_VERSION.tar.gz \
@@ -28,6 +34,6 @@ RUN chown -R dnsmasq:nogroup /srv/tftp \
 
 # DHCP and TFTP
 EXPOSE 67/udp 69/udp
-HEALTHCHECK pidof -q dnsmasq
+HEALTHCHECK CMD pidof -q dnsmasq
 ENTRYPOINT ["/dnsmasq.conf.sh"]
-CMD ["dnsmasq", "--keep-in-foreground"]
+CMD ["dnsmasq", "--keep-in-foreground", "--user=dnsmasq"]
