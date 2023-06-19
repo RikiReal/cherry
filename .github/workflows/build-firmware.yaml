@@ -36,8 +36,8 @@ jobs:
               message: "${{ steps.semver.outputs.version_tag }}",
               object: context.sha,
               type: "commit",
-              tagger.name: context.repo.owner.name,
-              tagger.email: context.repo.owner.email
+              tagger.name: context.actor,
+              tagger.email: "automation@cherry-firmware.com"
             })
             github.rest.git.createRef({
               owner: context.repo.owner,
