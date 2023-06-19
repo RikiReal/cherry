@@ -37,7 +37,7 @@ jobs:
               object: context.sha,
               type: "commit",
               tagger.name: context.repo.owner.name,
-              tagger.email: context.repo.owner.email,
+              tagger.email: context.repo.owner.email
             })
             github.rest.git.createRef({
               owner: context.repo.owner,
