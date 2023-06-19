@@ -24,11 +24,17 @@ jobs:
           minor_pattern: "(MINOR)"
           version_format: "${major}.${minor}.${patch}"
           change_path: "firmware"
-      -
-        name: Tag and push current repo code
-        run: |
-          git tag ${{ steps.semver.outputs.version_tag }}
-          git push origin ${{ steps.semver.outputs.version_tag }}
+     - 
+        name: Create tag
+        uses: actions/github-script@v5
+        with:
+        script: |
+          github.rest.git.createRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "refs/tags/${{ steps.semver.outputs.version_tag }}",
+            sha: context.sha
+          })
   buildx:
     needs: autotag
     runs-on: ubuntu-latest
