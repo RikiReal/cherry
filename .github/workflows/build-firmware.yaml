@@ -32,12 +32,12 @@ jobs:
             github.rest.git.createTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: "${{ steps.semver.outputs.version_tag }}"
-              message: "${{ steps.semver.outputs.version_tag }}"
-              object: context.sha
-              type: "commit"
-              tagger.name: context.repo.owner.name
-              tagger.email: context.repo.owner.email
+              tag: "${{ steps.semver.outputs.version_tag }}",
+              message: "${{ steps.semver.outputs.version_tag }}",
+              object: context.sha,
+              type: "commit",
+              tagger.name: context.repo.owner.name,
+              tagger.email: context.repo.owner.email,
             })
             github.rest.git.createRef({
               owner: context.repo.owner,
