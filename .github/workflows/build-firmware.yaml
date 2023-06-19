@@ -7,7 +7,7 @@ on:
     # branches:
     #   - 'main'
 jobs:
-  autotag:
+  buildx:
     runs-on: ubuntu-latest
     steps:
       - 
@@ -24,41 +24,6 @@ jobs:
           minor_pattern: "(MINOR)"
           version_format: "${major}.${minor}.${patch}"
           change_path: "firmware"
-      - 
-        name: Create tag
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.git.createTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag: "${{ steps.semver.outputs.version_tag }}",
-              message: "${{ steps.semver.outputs.version_tag }}",
-              object: context.sha,
-              type: "commit",
-              tagger.name: context.actor,
-              tagger.email: "automation@cherry-firmware.com"
-            })
-      -
-        name: Create annotated tag
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/${{ steps.semver.outputs.version_tag }}",
-              sha: context.sha
-            })
-  buildx:
-    needs: autotag
-    runs-on: ubuntu-latest
-    steps:
-      - 
-        name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       -
         name: Set Metadata
         id: meta
@@ -66,14 +31,13 @@ jobs:
         with:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{version}}
+            type=semver,pattern={{version}},value=${{ steps.semver.outputs.version }}
             type=sha
       - 
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
-          platforms: "linux/amd64,linux/arm64"
+          platforms: linux/amd64,linux/arm64
       - 
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
