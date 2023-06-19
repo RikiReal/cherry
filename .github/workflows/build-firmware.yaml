@@ -39,6 +39,11 @@ jobs:
               tagger.name: context.actor,
               tagger.email: "automation@cherry-firmware.com"
             })
+      -
+        name: Create annotated tag
+        uses: actions/github-script@v6
+        with:
+          script: |
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
