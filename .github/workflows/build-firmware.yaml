@@ -26,9 +26,19 @@ jobs:
           change_path: "firmware"
       - 
         name: Create tag
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           script: |
+            github.rest.git.createTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: "${{ steps.semver.outputs.version_tag }}"
+              message: "${{ steps.semver.outputs.version_tag }}"
+              object: context.sha
+              type: "commit"
+              tagger.name: context.repo.owner.name
+              tagger.email: context.repo.owner.email
+            })
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
