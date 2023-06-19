@@ -1,8 +1,10 @@
-name: build-firmware
+name: Build firmware
 on:
   push:
     paths:
       - firmware/**
+    branches:
+      - 'main'
 jobs:
   buildx:
     runs-on: ubuntu-latest
@@ -10,6 +12,26 @@ jobs:
       - 
         name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        uses: paulhatch/semantic-version@v5.0.2
+        id: semver
+        with:
+          tag_prefix: "v"
+          major_pattern: "(MAJOR)"
+          minor_pattern: "(MINOR)"
+          version_format: "${major}.${minor}.${patch}"
+          change_path: "firmware"
+      -
+        name: Set Metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}},value={{ steps.semver.outputs.version }}
+            type=sha
       - 
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -31,6 +53,12 @@ jobs:
           context: ./firmware
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cherry-firmware:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/cherry-firmware:latest
           cache-to: type=inline
+      -
+        name: Tag and push current repo code
+        run: |
+          git tag ${{ steps.git-semver.outputs.version_tag }}
+          git push origin ${{ steps.git-semver.outputs.version_tag }}
