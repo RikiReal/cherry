@@ -24,7 +24,7 @@ jobs:
           minor_pattern: "(MINOR)"
           version_format: "${major}.${minor}.${patch}"
           change_path: "firmware"
-     - 
+      - 
         name: Create tag
         uses: actions/github-script@v5
         with:
