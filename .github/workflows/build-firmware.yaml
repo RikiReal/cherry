@@ -3,9 +3,6 @@ on:
   push:
     paths:
       - firmware/**
-      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#push
-    # branches:
-    #   - 'main'
 jobs:
   buildx:
     runs-on: ubuntu-latest
@@ -13,27 +10,16 @@ jobs:
       - 
         name: Checkout code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      -
-        uses: paulhatch/semantic-version@v5.0.2
-        id: semver
-        with:
-          tag_prefix: "v"
-          major_pattern: "(MAJOR)"
-          minor_pattern: "(MINOR)"
-          version_format: "${major}.${minor}.${patch}"
-          change_path: "firmware"
       -
         name: Set Metadata
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: |
-            rikireal/cherry-firmware
+            ${{ secrets.DOCKERHUB_USERNAME }}/cherry-firmware
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=semver,pattern={{version}},value=${{ steps.semver.outputs.version }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=raw,value=${{ github.run_number }}
             type=sha
       - 
         name: Set up QEMU
